@@ -9,6 +9,11 @@ from scraper.items import Song
 
 
 def parse_int(string):
+    """
+    Finds the first integer in a string without casting it.
+    :param string:
+    :return:
+    """
     matches = re.findall(r'(\d+)', string)
 
     if matches:
@@ -18,6 +23,11 @@ def parse_int(string):
 
 
 def parse_float(string):
+    """
+    Finds the first float in a string without casting it.
+    :param string:
+    :return:
+    """
     matches = re.findall(r'(\d+\.\d+)', string)
 
     if matches:
@@ -27,6 +37,10 @@ def parse_float(string):
 
 
 class SongLoader(ItemLoader):
+    """
+    The loader takes input from the spider as lists of matching tags and populates the Item which will be the final
+    output.
+    """
     default_item_class = Song
     default_input_processor = MapCompose(str.strip)
     default_output_processor = TakeFirst()

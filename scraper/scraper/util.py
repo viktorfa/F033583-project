@@ -2,7 +2,12 @@
 
 
 def process_artist_links(links):
-    print(links)
+    """
+    The LinkExtractor in the spider finds links for artist pages, and this function modifies the links so that the url
+    is for the top songs of the artist, because that page contains more song entries.
+    :param links:
+    :return:
+    """
     for link in links:
         splitted_url = link.url.split('/')
         artist_id = splitted_url[-1]

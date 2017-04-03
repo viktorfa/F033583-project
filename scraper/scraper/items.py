@@ -9,6 +9,9 @@ import scrapy
 
 
 class Song(scrapy.Item):
+    """
+    Defines the fields in the Song item which the scraper populates and finally outputs.
+    """
     # define the fields for your item here like:
     # name = scrapy.Field()
     title = scrapy.Field(serializer=str)

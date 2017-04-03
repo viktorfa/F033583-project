@@ -12,25 +12,33 @@ from scraper.util import process_artist_links
 class SongSpider(CrawlSpider):
     allowed_domains = ['www.xiami.com']
     name = 'song_spider'
-    start_urls = ['http://www.xiami.com/genre/detail/gid/1']
+    start_urls = ['http://www.xiami.com/genre/detail/gid/1']  # The page for Hip-Hop genre.
 
     rules = [
+        #  This rule just gets all links to artist pages from the link the spider visits.
         Rule(
             LinkExtractor(
                 allow=('/artist/\w+',)
             ),
-            follow=True,
+            follow=True,  # Just follow, not parse.
             process_links=process_artist_links
         ),
+        #  This rule gets the links to all song pages the spider finds and sends them to the parser.
         Rule(
             LinkExtractor(
                 allow=('/song/\w+',)
             ),
-            callback='parse_song_url'
+            callback='parse_song_url'  # This makes the spider actually parse the page.
         ),
     ]
 
     def parse_song_url(self, response):
+        """
+        Parses all the relevant data from a song page. It follows the link to the song's album page for some more
+        relevant information.
+        :param response:
+        :return:
+        """
         song_loader = SongLoader(response=response)
         album_url = response.xpath('//table[@id="albums_info"]//a[contains(@href, "album")]/@href').extract()
 
@@ -73,6 +81,11 @@ class SongSpider(CrawlSpider):
         yield Request(response.urljoin(album_url), callback=self.parse_album_url, meta=dict(loader=song_loader))
 
     def parse_album_url(self, response):
+        """
+        Parses all the relevant information from an album page and puts that information in a Song item.
+        :param response:
+        :return:
+        """
         song_loader = response.meta['loader']
         song_loader.selector = response.css('body')
 

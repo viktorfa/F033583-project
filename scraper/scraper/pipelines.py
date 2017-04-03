@@ -7,6 +7,9 @@
 
 
 class IdPipeline(object):
+    """
+    Simply gives an id to each song which will be unique for each run of the spider.
+    """
     id_count = 0
 
     def process_item(self, item, spider):
