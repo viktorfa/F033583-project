@@ -3,7 +3,7 @@ import unittest
 
 from scrapy.link import Link
 
-from scraper.util import process_artist_links
+from scraper.scraper.util import process_artist_links
 
 
 class TestStaticMethods(unittest.TestCase):
