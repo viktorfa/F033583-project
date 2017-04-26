@@ -19,7 +19,6 @@ class Test(unittest.TestCase):
     def test_get_weighted_query_matrix(self):
         query = 'Take me to the top'
         actual = get_weighted_query_matrix(query, self.inverted_index_1)
-        print(actual)
         self.assertIsInstance(actual, csr_matrix)
 
 
@@ -31,4 +30,12 @@ class TestRetriever(unittest.TestCase):
         query = 'bad girl'
         actual = self.retriever_1.retrieve(query)
 
-        print(actual)
+        self.assertIsNotNone(actual)
+
+    def test_retrieve_by_multiple_fields(self):
+        index_fields = [['title', 'lyrics', 'artist']]
+        retriever = Retriever(index_fields)
+        query = 'you are my bad girl'
+        actual = retriever.retrieve(query, index=str(index_fields[0]))
+
+        self.assertIsNotNone(actual)

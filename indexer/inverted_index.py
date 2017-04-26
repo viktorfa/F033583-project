@@ -1,17 +1,14 @@
-import os
 import re
-import json
-import nltk
 from scipy import sparse
-from scipy.spatial import distance
 from pprint import pprint
+
+from common.io import load_inverted_index, load_song_objects, write_inverted_index
 
 
 def get_inverted_index(fields=list(['title'])):
-    file_name = "inverted_index_for_%s.json" % str(fields)
-    if file_name in os.listdir('.'):
-        with open(file_name, 'r') as input_file:
-            return json.load(input_file)
+    existing_inverted_index = load_inverted_index(fields)
+    if existing_inverted_index:
+        return existing_inverted_index
     else:
         return create_inverted_index(fields=fields)
 
@@ -35,7 +32,7 @@ def tokenize(document):
     return [token.lower() for token in document.split()]
 
 
-def create_inverted_index(input_file_name='scraper/example_output.json', fields=list(['title'])):
+def create_inverted_index(input_file_name='example_output.json', fields=list(['title'])):
     """
     Creates an inverted index and writes it to a file based on some structured input from the scraper,
     indexed by the specified fields.
@@ -44,8 +41,7 @@ def create_inverted_index(input_file_name='scraper/example_output.json', fields=
     :return:
     """
     try:
-        with open(input_file_name, 'r') as input_file:
-            song_objects = json.load(input_file)
+        song_objects = load_song_objects(input_file_name)
     except FileNotFoundError as e:
         print(e)
         return
@@ -53,7 +49,7 @@ def create_inverted_index(input_file_name='scraper/example_output.json', fields=
     documents = []
 
     for song in song_objects:
-        documents.append(' '.join([value for key, value in song.items() if key in fields]))
+        documents.append(' '.join([value if key in fields else ' ' for key, value in song.items()]))
 
     inverted_index = {}
 
@@ -80,7 +76,7 @@ def create_inverted_index(input_file_name='scraper/example_output.json', fields=
 
     print("Created inverted index for %d objects over fields: %s" % (len(song_objects), str(fields)))
     pprint(meta_information)
-    with open('./inverted_index_for_%s.json' % (str(fields)), 'w') as output_file:
-        json.dump(inverted_index, output_file)
+
+    write_inverted_index(fields, inverted_index)
 
     return inverted_index
