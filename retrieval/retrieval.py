@@ -6,20 +6,26 @@ from scipy import sparse
 from scipy.spatial.distance import cdist
 
 from common.io import load_song_objects
-from indexer.inverted_index import get_inverted_index, tokenize
+from indexer.inverted_index import get_inverted_index, tokenize, IndexProvider
 from retrieval.ranker import Ranker
 
 
 class Retriever:
     def __init__(self, index_fields=list([['title'], ['lyrics'], ['artist'], ['title', 'lyrics', 'artist']])):
+        self.index_provider = IndexProvider()
         self.inverted_indices = {}
         self.inverted_indices['default'] = get_inverted_index()
         self.weighted_matrices = {}
         self.weighted_matrices['default'] = get_weighted_document_matrix(self.inverted_indices['default'])
 
+        self.indices = {}
+        self.indices['default'] = self.index_provider.get_inverted_index(['title'])
+
         for field in index_fields:
             self.inverted_indices[str(field)] = get_inverted_index(field)
             self.weighted_matrices[str(field)] = get_weighted_document_matrix(self.inverted_indices[str(field)])
+
+            self.indices[str(field)] = self.index_provider.get_inverted_index(field)
 
         self.song_objects = load_song_objects()
         self.song_objects_dict = {int(song_object['id']): song_object for song_object in self.song_objects}
@@ -80,6 +86,10 @@ class Query:
         Some useful meta information about the query execution and techniques of the search
         :return: 
         """
+        return dict(
+            total_songs=len(self.song_objects_dict),
+            query=self.query,
+        )
 
     def get_ranking(self):
         return self.sorted_ranking
