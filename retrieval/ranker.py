@@ -17,8 +17,20 @@ class Ranker:
             }
             ranking.append(rank_object)
         result = sorted(ranking, key=self.get_ranking_function, reverse=True)
-        pprint(result)
         return result
+
+    def get_ranking_dict(self, song_objects_dict, relevancy_ranking):
+        ranking = []
+        for document_id, rank in relevancy_ranking:
+            rank_object = {
+                'id': document_id,
+                'relevance': 1 - rank,
+                'popularity': get_popularity_score(song_objects_dict[document_id]),
+                'date': song_objects_dict[document_id]['year_released'],
+            }
+            rank_object['score'] = self.get_ranking_function(rank_object)
+            ranking.append(rank_object)
+        return {rank_object['id']: rank_object for rank_object in ranking}
 
     def get_ranked_results(self, song_objects_dict, ranking):
         result = []
@@ -39,7 +51,6 @@ class DateRanker(Ranker):
 
 
 def get_popularity_score(song_object):
-    print(song_object)
     album_rating = song_object['album_rating'] if 'album_rating' in song_object.keys() else 10
     return album_rating / 10  # Should also use other metrics for this
 

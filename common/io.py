@@ -19,7 +19,7 @@ def load_inverted_index(fields):
         return None
 
 
-def write_inverted_index(fields, inverted_index):
-    with open(os.path.join(constants.INVERTED_INDEX_FOLDER, './inverted_index_for_%s.json' % (str(fields))),
+def write_inverted_index(index):
+    with open(os.path.join(constants.INVERTED_INDEX_FOLDER, './inverted_index_for_%s.json' % (str(index.get_fields()))),
               'w') as output_file:
-        json.dump(inverted_index, output_file)
+        json.dump(index.get_inverted_index_for_file(), output_file)
