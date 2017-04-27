@@ -1,5 +1,7 @@
 import math
 import operator
+
+from copy import deepcopy
 from scipy import sparse
 from scipy.spatial.distance import cdist
 
@@ -20,12 +22,13 @@ class Retriever:
             self.weighted_matrices[str(field)] = get_weighted_document_matrix(self.inverted_indices[str(field)])
 
         self.song_objects = load_song_objects()
+        self.song_objects_dict = {int(song_object['id']): song_object for song_object in self.song_objects}
 
     def retrieve(self, query, limit=10, filters=None, index='default'):
-        query = Query(query, self.inverted_indices[index], self.weighted_matrices[index], self.song_objects)
+        query = Query(query, self.inverted_indices[index], self.weighted_matrices[index], self.song_objects_dict, self)
         query.execute_query()
 
-        self.print_results(query, query.get_relevancy_ranking(), index)
+        # self.print_results(query, query.get_relevancy_ranking(), index)
         return query
 
     def print_results(self, query, sorted_ranking, index):
@@ -35,17 +38,16 @@ class Retriever:
 
 
 class Query:
-    def __init__(self, query, index, matrix, song_objects, ranker=Ranker()):
+    def __init__(self, query, index, matrix, song_objects_dict, retriever, ranker=Ranker()):
         self.query = query
         self.index = index
         self.matrix = matrix
-        self.song_objects = song_objects
+        self.song_objects_dict = song_objects_dict
         self.ranker = ranker
+        self.retriever = retriever
         self.sorted_relevancy_ranking = None
         self.sorted_ranking = None
         self.sorted_results = None
-
-        self.song_objects_dict = {int(song_object['id']): song_object for song_object in song_objects}
 
     def execute_query(self):
         query_matrix = get_weighted_query_matrix(self.query, self.index)
@@ -59,11 +61,25 @@ class Query:
         return self.sorted_results
 
     def rank_results(self):
-        self.sorted_ranking = self.ranker.get_sorted_ranking(self.song_objects, self.sorted_relevancy_ranking)
+        self.sorted_ranking = self.ranker.get_sorted_ranking(self.song_objects_dict, self.sorted_relevancy_ranking)
         self.sorted_results = self.ranker.get_ranked_results(self.song_objects_dict, self.sorted_ranking)
 
     def get_sorted_results(self):
         return self.sorted_results
+
+    def get_sorted_results_with_analytics(self):
+        result = []
+        for index, song_object in enumerate(self.sorted_results):
+            new_song_object = deepcopy(song_object)
+            new_song_object['ranking'] = self.sorted_ranking[index]
+            result.append(new_song_object)
+        return result
+
+    def get_meta_information(self):
+        """
+        Some useful meta information about the query execution and techniques of the search
+        :return: 
+        """
 
     def get_ranking(self):
         return self.sorted_ranking

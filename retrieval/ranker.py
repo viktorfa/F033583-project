@@ -6,14 +6,14 @@ class Ranker:
         self.relevancy = relevancy
         self.popularity = popularity
 
-    def get_sorted_ranking(self, song_objects, relevancy_ranking):
+    def get_sorted_ranking(self, song_objects_dict, relevancy_ranking):
         ranking = []
         for document_id, rank in relevancy_ranking:
             rank_object = {
                 'id': document_id,
                 'relevance': 1 - rank,
-                'popularity': get_popularity_score(song_objects[document_id]),
-                'date': song_objects[document_id]['year_released']
+                'popularity': get_popularity_score(song_objects_dict[document_id]),
+                'date': song_objects_dict[document_id]['year_released']
             }
             ranking.append(rank_object)
         result = sorted(ranking, key=self.get_ranking_function, reverse=True)

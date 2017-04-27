@@ -139,3 +139,4 @@ ENV/
 # Rope project settings
 .ropeproject
 
+db.sqlite3
