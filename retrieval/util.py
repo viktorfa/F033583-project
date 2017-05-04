@@ -23,7 +23,7 @@ def get_filter_function(field, operator, value):
     if operator == 'gte':
         return lambda x: x[field] >= type(x[field])(value)
     elif operator == 'lte':
-        return lambda x: x[field] >= type(x[field])(value)
+        return lambda x: x[field] <= type(x[field])(value)
     elif operator == 'eq':
         return lambda x: x[field] == type(x[field])(value)
     elif operator == 'neq':

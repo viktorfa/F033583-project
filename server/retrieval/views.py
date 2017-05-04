@@ -19,5 +19,5 @@ def get_query(request, query):
 
 
 @api_view(['POST'])
-def click_result(request):
-    pass
+def click_result(request, query_id):
+    return Response()

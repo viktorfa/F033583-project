@@ -6,6 +6,7 @@ from scipy.spatial.distance import cdist
 from common.io import load_song_objects
 from indexer.inverted_index import IndexProvider
 from retrieval.ranker import Ranker
+from retrieval.search_log import SearchLog
 
 
 class Retriever:
@@ -30,11 +31,15 @@ class Retriever:
         self.song_objects = load_song_objects()
         self.song_objects_dict = {int(song_object['id']): song_object for song_object in self.song_objects}
 
+        self.search_log = SearchLog()
+
     def retrieve(self, query, limit=10, filters=list([]), index='default', ranker=Ranker()):
         if type(index) is list:
             index = str(sorted(index))
         query = Query(query, self.indices[index], self.song_objects_dict, self, ranker=ranker, filters=filters)
-        query.execute_query()
+        query_id = self.search_log.register_query(query)
+        query.execute_query(query_id)
+
 
         # self.print_results(query, query.get_relevancy_ranking(), index)
         return query
@@ -56,8 +61,9 @@ class Query:
         self.sorted_relevancy_ranking = None
         self.filtered_ids = None
         self.ranking_dict = None
+        self.query_id = None
 
-    def execute_query(self):
+    def execute_query(self, query_id=None):
         query_matrix = self.index.get_query_matrix(self.query)
 
         distances = cdist(query_matrix.todense(), self.index.get_matrix().todense(), metric='cosine')[0]
@@ -66,6 +72,8 @@ class Query:
 
         self.filter_results()
         self.rank_results()
+
+        self.query_id = query_id
 
     def rank_results(self):
         self.ranking_dict = self.ranker.get_ranking_dict(self.song_objects_dict, self.sorted_relevancy_ranking)
@@ -97,9 +105,14 @@ class Query:
         """
         return dict(
             total_songs=len(self.song_objects_dict),
+            retrieved_songs=len(self.filtered_ids),
             query=self.query,
-            index=self.index.get_fields()
+            index=self.index.get_fields(),
+            query_id=self.query_id
         )
 
     def get_relevancy_ranking(self):
         return self.sorted_relevancy_ranking
+
+    def get_query(self):
+        return self.query

@@ -16,9 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-from server.retrieval.views import get_query
+from server.retrieval.views import get_query, click_result
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^search/(?P<query>[\w ]+)/$', get_query),
+    url(r'^click/(?P<query_id>\d+)/$', click_result),
 ]
