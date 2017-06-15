@@ -1,4 +1,4 @@
-from pprint import pprint
+from retrieval import search_log
 
 
 class Ranker:
@@ -19,7 +19,7 @@ class Ranker:
         result = sorted(ranking, key=self.get_ranking_function, reverse=True)
         return result
 
-    def get_ranking_dict(self, song_objects_dict, relevancy_ranking):
+    def get_ranking_dict(self, song_objects_dict, relevancy_ranking, query_object):
         ranking = []
         for document_id, rank in relevancy_ranking:
             rank_object = {
@@ -27,6 +27,7 @@ class Ranker:
                 'relevance': 1 - rank,
                 'popularity': get_popularity_score(song_objects_dict[document_id]),
                 'date': song_objects_dict[document_id]['year_released'],
+                'clicks': search_log.get_songs_clicked_for_query(query_object.get_query()).count(document_id)
             }
             rank_object['score'] = self.get_ranking_function(rank_object)
             ranking.append(rank_object)
@@ -39,7 +40,7 @@ class Ranker:
         return result
 
     def get_ranking_function(self, rank_object):
-        return rank_object['relevance'] * self.relevancy + rank_object['popularity'] * self.popularity
+        return rank_object['relevance'] * self.relevancy + rank_object['popularity'] * self.popularity + rank_object['clicks'] * 100
 
 
 class DateRanker(Ranker):

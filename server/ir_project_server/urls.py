@@ -21,5 +21,5 @@ from server.retrieval.views import get_query, click_result
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^search/(?P<query>[\w ]+)/$', get_query),
-    url(r'^click/(?P<query_id>\d+)/$', click_result),
+    url(r'^click/$', click_result),
 ]

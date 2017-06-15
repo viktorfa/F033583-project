@@ -6,7 +6,7 @@ from scipy.spatial.distance import cdist
 from common.io import load_song_objects
 from indexer.inverted_index import IndexProvider
 from retrieval.ranker import Ranker
-from retrieval.search_log import SearchLog
+from retrieval import search_log
 
 
 class Retriever:
@@ -31,15 +31,12 @@ class Retriever:
         self.song_objects = load_song_objects()
         self.song_objects_dict = {int(song_object['id']): song_object for song_object in self.song_objects}
 
-        self.search_log = SearchLog()
-
     def retrieve(self, query, limit=10, filters=list([]), index='default', ranker=Ranker()):
         if type(index) is list:
             index = str(sorted(index))
         query = Query(query, self.indices[index], self.song_objects_dict, self, ranker=ranker, filters=filters)
-        query_id = self.search_log.register_query(query)
+        query_id = search_log.register_query(query)
         query.execute_query(query_id)
-
 
         # self.print_results(query, query.get_relevancy_ranking(), index)
         return query
@@ -76,7 +73,7 @@ class Query:
         self.query_id = query_id
 
     def rank_results(self):
-        self.ranking_dict = self.ranker.get_ranking_dict(self.song_objects_dict, self.sorted_relevancy_ranking)
+        self.ranking_dict = self.ranker.get_ranking_dict(self.song_objects_dict, self.sorted_relevancy_ranking, self)
 
     def filter_results(self):
         print("Filtering results")
