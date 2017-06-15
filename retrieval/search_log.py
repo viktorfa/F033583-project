@@ -12,6 +12,11 @@ def register_play(query_id, song_id):
 
 
 def register_query(query):
+    """
+    Registers a query in the search log.
+    :param query: 
+    :return: 
+    """
     query_id = _get_query_id()
     search_log_query = SearchLogQuery(query, query_id)
     query_log[query_id] = search_log_query
@@ -24,6 +29,11 @@ def register_query(query):
 
 
 def get_songs_clicked_for_query(query):
+    """
+    Gets the songs clicked for a query string.
+    :param query: string
+    :return: 
+    """
     result = []
     if query not in query_index.keys():
         return result
@@ -46,6 +56,10 @@ def get_songs_played_for_query(query):
 
 
 def _get_query_id():
+    """
+    Gets a unique id for a query.
+    :return: 
+    """
     global id_count
     temp = id_count
     id_count += 1
@@ -53,6 +67,9 @@ def _get_query_id():
 
 
 class SearchLogQuery:
+    """
+    Object for keeping track of the user activity (clicks) for a query.
+    """
     def __init__(self, query, query_id):
         self.query = query
         self.query_id = query_id

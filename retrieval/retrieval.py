@@ -10,6 +10,10 @@ from retrieval import search_log
 
 
 class Retriever:
+    """
+    The Retriever is the class handling string queries from the server and returns a usable result in the form of a Query.
+    """
+
     def __init__(self, index_fields=list([
         ['title'],
         ['lyrics'],
@@ -48,6 +52,11 @@ class Retriever:
 
 
 class Query:
+    """
+    A Query starts its lifecycle with a query string and some context data. It then works as a wrapper for ranking, 
+    filtering and sorting results from that query.
+    """
+
     def __init__(self, query, index, song_objects_dict, retriever, ranker=Ranker(), filters=list([])):
         self.query = query
         self.index = index
