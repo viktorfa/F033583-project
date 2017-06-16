@@ -8,18 +8,33 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import { createStore } from 'redux';
+import {createStore, applyMiddleware} from 'redux';
+import thunkMiddlware from 'redux-thunk';
+
+const initialState = {
+  query: '',
+  results: [],
+  loading: false,
+  stats: {}
+};
 
 // Centralized application state
 // For more information visit http://redux.js.org/
-const store = createStore((state, action) => {
+const store = createStore((state = initialState, action) => {
   // TODO: Add action handlers (aka "reduces")
-  switch (action) {
-    case 'COUNT':
-      return { ...state, count: (state.count || 0) + 1 };
+  switch (action.type) {
+    case 'START_QUERY':
+      return {...state, query: action.query, loading: true};
+    case 'UPDATE_SEARCH_RESULTS':
+      return {...state, results: action.data.results, stats: action.data.meta, loading: false};
     default:
       return state;
   }
-});
+},
+applyMiddleware(thunkMiddlware));
+
+const executeQuery = (query) => {
+
+};
 
 export default store;
