@@ -31,15 +31,20 @@ class SearchBox extends React.Component {
           event.preventDefault();
           this.props.executeQuery(this.state.query)
         }}>
-          <div className="form-group">
-            <label htmlFor="query">Query</label>
+          <div className="form-group mdl-textfield mdl-js-textfield">
             <input type="text" name="query" placeholder="Enter query here"
                    value={this.state.query}
-                   onChange={(event) => this.handleChange(event)}/>
+                   onChange={(event) => this.handleChange(event)}
+                   style={{textAlign: 'center'}}
+                   className="mdl-textfield__input"
+                   autoFocus={true}
+            />
           </div>
-          <button type="submit">
-            Search
-          </button>
+          <div>
+            <button type="submit" className="mdl-button mdl-js-button mdl-js-ripple-effect">
+              Search
+            </button>
+          </div>
         </form>
       </div>
     );

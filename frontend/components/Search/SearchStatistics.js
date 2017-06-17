@@ -11,13 +11,29 @@
 import React from 'react';
 
 function SearchStatistics(props) {
-  return (
-    <div>
-      <pre>
-        {JSON.stringify(props.stats, null, 2)}
-      </pre>
-    </div>
-  );
+  console.log("PROMP");
+  console.log(props.stats);
+  if (Object.keys(props.stats).length > 0) {
+    return (
+      <div>
+        <h6>Information about the last query</h6>
+        <table className="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+          <tr>
+            {Object.keys(props.stats).map((key) => <th key={key}>{key}</th>)}
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            {Object.keys(props.stats).map((key) => <td key={key}>{props.stats[key]}</td>)}
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  } else {
+    return (<div></div>)
+  }
 }
 
 export default SearchStatistics;

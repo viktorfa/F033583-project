@@ -12,9 +12,16 @@ from scraper.util import process_artist_links
 class SongSpider(CrawlSpider):
     allowed_domains = ['www.xiami.com']
     name = 'song_spider'
-    start_urls = ['http://www.xiami.com/genre/detail/gid/1']  # The page for Hip-Hop genre.
+    start_urls = ['http://www.xiami.com/genre/artists/gid/1']  # The page for Hip-Hop genre.
 
     rules = [
+        #  This rule follows the pagination of the artists in the start url page.
+        Rule(
+            LinkExtractor(
+                allow=('/genre/artists/gid/1/page/\d+',)
+            ),
+            follow=True,  # Just follow, not parse.
+        ),
         #  This rule just gets all links to artist pages from the link the spider visits.
         Rule(
             LinkExtractor(

@@ -9,51 +9,18 @@
  */
 
 import {connect} from 'react-redux';
-import fetch from 'isomorphic-fetch';
 import SearchComponent from "./SearchComponent";
 
-const START_QUERY = 'START_QUERY';
-const UPDATE_SEARCH_RESULTS = 'UPDATE_SEARCH_RESULTS';
-
-const startQuery = (query) => {
-  return {
-    type: START_QUERY,
-    query
-  }
-};
-
-const executeQuery = (query) => {
-  return dispatch => {
-    dispatch(startQuery(query));
-    fetch(`//localhost:8000/search/${query}/`)
-      .then(response => response.json())
-      .then(json => dispatch(updateSearchResults(json)))
-  }
-};
-
-const updateSearchResults = (data) => {
-  console.log("Updating search results:");
-  console.log(data);
-  return {
-    type: UPDATE_SEARCH_RESULTS,
-    data
-  }
-};
-
-
 const mapDispatchToProps = (dispatch) => {
-  return {
-    executeQuery: (query) => {
-      dispatch(executeQuery(query))
-
-    },
-  }
+  return {}
 };
 
-const mapStateToProps = (state) => ({
-  query: state.query,
-  results: state.results,
-  stats: state.stats
-});
+const mapStateToProps = (state) => {
+  return {
+    query: state.resultReducer.query,
+    results: state.resultReducer.results,
+    stats: state.resultReducer.stats
+  }
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchComponent);

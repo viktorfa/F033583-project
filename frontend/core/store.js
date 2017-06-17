@@ -9,32 +9,14 @@
  */
 
 import {createStore, applyMiddleware} from 'redux';
-import thunkMiddlware from 'redux-thunk';
-
-const initialState = {
-  query: '',
-  results: [],
-  loading: false,
-  stats: {}
-};
+import thunkMiddleware from 'redux-thunk';
+import rootReducer from './reducers';
 
 // Centralized application state
 // For more information visit http://redux.js.org/
-const store = createStore((state = initialState, action) => {
-  // TODO: Add action handlers (aka "reduces")
-  switch (action.type) {
-    case 'START_QUERY':
-      return {...state, query: action.query, loading: true};
-    case 'UPDATE_SEARCH_RESULTS':
-      return {...state, results: action.data.results, stats: action.data.meta, loading: false};
-    default:
-      return state;
-  }
-},
-applyMiddleware(thunkMiddlware));
-
-const executeQuery = (query) => {
-
-};
+const store = createStore(
+  rootReducer,
+  applyMiddleware(thunkMiddleware)
+);
 
 export default store;

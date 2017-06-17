@@ -10,7 +10,6 @@
 
 import React from 'react';
 
-
 class Song extends React.Component {
   constructor(props) {
     super(props);
@@ -36,10 +35,36 @@ class Song extends React.Component {
   render() {
     return (
       <div>
-        <button onClick={() => this.selectSong()} disabled={this.state.selected}>Select song</button>
-        <pre>
-        {JSON.stringify(this.props.song, null, 2)}
-      </pre>
+        <table className="mdl-data-table mdl-js-data-table mdl-shadow--2dp" style={{minWidth: '100%'}}>
+          <thead>
+          <tr>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Album</th>
+            <th>Year</th>
+            <th>Rank score</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>{this.props.song.title}</td>
+            <td>{this.props.song.artist}</td>
+            <td>{this.props.song.album}</td>
+            <td>{this.props.song.year_released}</td>
+            <td>{this.props.song.ranking.score}</td>
+            <td>
+              <button onClick={() => this.selectSong()} disabled={this.state.selected}
+                      className="mdl-button mdl-js-button"
+              >
+                Select song</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        {this.state.selected ? (<pre>
+         {JSON.stringify(this.props.song, null, 2)}
+         </pre>) : ''}
+
       </div>
     );
   }
