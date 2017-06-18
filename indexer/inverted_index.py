@@ -6,7 +6,7 @@ from indexer.weighing import MatrixMaker, tokenize
 
 
 class IndexProvider:
-    def __init__(self, scraper_output_file_name='example_output.json'):
+    def __init__(self, scraper_output_file_name):
         self.scraper_output_file_name = scraper_output_file_name
         self.indices = {}
 
@@ -50,7 +50,7 @@ class IndexProvider:
         pprint(meta_information)
 
         new_index_object = Index(inverted_index, fields, meta_information)
-        write_inverted_index(new_index_object)
+        write_inverted_index(self.scraper_output_file_name, new_index_object)
 
         self.indices[str(fields)] = new_index_object
 
@@ -60,7 +60,7 @@ class IndexProvider:
         if str(fields) in self.indices.keys():
             return self.indices[str(fields)]
 
-        existing_inverted_index = load_inverted_index(fields)
+        existing_inverted_index = load_inverted_index(self.scraper_output_file_name, fields)
         if existing_inverted_index:
             meta_information = existing_inverted_index.pop('meta_information')
             new_index_object = Index(existing_inverted_index, fields, meta_information)

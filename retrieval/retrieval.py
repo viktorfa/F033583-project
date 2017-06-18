@@ -14,17 +14,19 @@ class Retriever:
     The Retriever is the class handling string queries from the server and returns a usable result in the form of a Query.
     """
 
-    def __init__(self, index_fields=list([
-        ['title'],
-        ['lyrics'],
-        ['artist'],
-        ['artist', 'lyrics'],
-        ['artist', 'title'],
-        ['title', 'lyrics'],
-        ['title', 'lyrics', 'artist']
-    ])
+    def __init__(self,
+                 index_fields=list([
+                     ['title'],
+                     ['lyrics'],
+                     ['artist'],
+                     ['artist', 'lyrics'],
+                     ['artist', 'title'],
+                     ['title', 'lyrics'],
+                     ['title', 'lyrics', 'artist']
+                 ]),
+                 scraper_output_file='example_output.json'
                  ):
-        self.index_provider = IndexProvider()
+        self.index_provider = IndexProvider(scraper_output_file)
 
         self.indices = {}
         self.indices['default'] = self.index_provider.get_inverted_index(['title'])
@@ -32,7 +34,7 @@ class Retriever:
         for field in index_fields:
             self.indices[str(sorted(field))] = self.index_provider.get_inverted_index(field)
 
-        self.song_objects = load_song_objects()
+        self.song_objects = load_song_objects(scraper_output_file)
         self.song_objects_dict = {int(song_object['id']): song_object for song_object in self.song_objects}
 
     def retrieve(self, query, limit=10, filters=list([]), index='default', ranker=Ranker()):

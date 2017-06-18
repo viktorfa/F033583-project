@@ -26,7 +26,7 @@ class Ranker:
                 'id': document_id,
                 'relevance': 1 - rank,
                 'popularity': get_popularity_score(song_objects_dict[document_id]),
-                'date': song_objects_dict[document_id]['year_released'],
+                'date': song_objects_dict[document_id]['year_released'] if 'year_released' in song_objects_dict[document_id].keys() else 0,
                 'clicks': search_log.get_songs_clicked_for_query(query_object.get_query()).count(document_id)
             }
             rank_object['score'] = self.get_ranking_function(rank_object)
