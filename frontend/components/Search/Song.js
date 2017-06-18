@@ -32,41 +32,53 @@ class Song extends React.Component {
       }).catch(error => console.log(error.message));
   }
 
-  render() {
-    return (
-      <div>
-        <table className="mdl-data-table mdl-js-data-table mdl-shadow--2dp" style={{minWidth: '100%'}}>
-          <thead>
-          <tr>
-            <th>Title</th>
-            <th>Artist</th>
-            <th>Album</th>
-            <th>Year</th>
-            <th>Rank score</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td>{this.props.song.title}</td>
-            <td>{this.props.song.artist}</td>
-            <td>{this.props.song.album}</td>
-            <td>{this.props.song.year_released}</td>
-            <td>{this.props.song.ranking.score}</td>
-            <td>
-              <button onClick={() => this.selectSong()} disabled={this.state.selected}
-                      className="mdl-button mdl-js-button"
-              >
-                Select song</button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-        {this.state.selected ? (<pre>
-         {JSON.stringify(this.props.song, null, 2)}
-         </pre>) : ''}
+  highlightQuery(string) {
+    const queryTerms = this.props.stats.query.split(' ').map(token => token.toLowerCase());
+    return <span>{string.split(' ').map((token, index) => {
+      return queryTerms.includes(token.toLowerCase()) ? <span className="highlight-text">{token}</span> : <span> {token} </span>;
+    })}</span>;
+  }
 
-      </div>
-    );
+  render() {
+    if (this.state.selected !== true) {
+
+      return (
+        <div className="mdl-shadow--2dp">
+          <div className="mdl-grid">
+            <div className="mdl-cell--1-col">
+              <small>Rank</small>
+              <h6 style={{marginTop: 0}}>{this.props.rank}</h6>
+            </div>
+            <div className="mdl-cell--4-col">
+              <p><strong>{(this.highlightQuery(this.props.song.title))} ({this.props.song.year_released})</strong></p>
+              <p>{this.highlightQuery(this.props.song.artist)}</p>
+            </div>
+            <div className="mdl-cell--4-col">
+              <p>
+                <small>Score</small>
+                {this.props.song.ranking.score}</p>
+              <p>
+                <small>Clicks</small>
+                {this.props.song.ranking.clicks}</p>
+            </div>
+          </div>
+          <div>
+            <small>{this.highlightQuery(this.props.song.lyrics.replace(/[\n\r]+/g, ' '))}</small>
+          </div>
+          <button onClick={() => this.selectSong()} disabled={this.state.selected}
+                  className="mdl-button mdl-js-button"
+          >
+            Select song
+          </button>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <pre>{JSON.stringify(this.props.song, null, 2)}</pre>
+        </div>
+      )
+    }
   }
 }
 
