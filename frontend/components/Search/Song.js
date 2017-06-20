@@ -63,7 +63,7 @@ class Song extends React.Component {
             </div>
           </div>
           <div>
-            <small>{this.highlightQuery(this.props.song.lyrics.replace(/[\n\r]+/g, ' '))}</small>
+            {/**<small>{this.highlightQuery(this.props.song.lyrics.replace(/[\n\r]+/g, ' '))}</small>*/}
           </div>
           <button onClick={() => this.selectSong()} disabled={this.state.selected}
                   className="mdl-button mdl-js-button"
