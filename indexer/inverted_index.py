@@ -28,6 +28,7 @@ class IndexProvider:
         inverted_index = {}
 
         for document_id, document in enumerate(documents):
+            document_id = str(document_id)  # Using strings as keys in dicts
             tokens = tokenize(document)
             token_counts = [(token, tokens.count(token),) for token in set(tokens)]
             for token, count in token_counts:
