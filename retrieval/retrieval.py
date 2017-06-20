@@ -44,7 +44,7 @@ class Retriever:
         query_id = search_log.register_query(query)
         query.execute_query(query_id)
 
-        # self.print_results(query, query.get_relevancy_ranking(), index)
+        # self.print_results(query, query.get_relevance_ranking(), index)
         return query
 
     def print_results(self, query, sorted_ranking, index):
@@ -66,25 +66,50 @@ class Query:
         self.ranker = ranker
         self.retriever = retriever
         self.filter_functions = filters
-        self.sorted_relevancy_ranking = None
+        self.relevance_ranking_dict = None
+        self.sorted_relevance_ranking = None
         self.filtered_ids = None
         self.ranking_dict = None
         self.query_id = None
+        self.results = None
 
     def execute_query(self, query_id=None):
         query_matrix = self.index.get_query_matrix(self.query)
 
         distances = cdist(query_matrix.todense(), self.index.get_matrix().todense(), metric='cosine')[0]
-        relevancy_ranking = [(document_id, score,) for document_id, score in enumerate(distances)]
-        self.sorted_relevancy_ranking = sorted(relevancy_ranking, key=operator.itemgetter(1))
+        self.relevance_ranking_dict = {document_id: score for document_id, score in enumerate(distances)}
+        self.sorted_relevance_ranking = sorted(
+            [(document_id, score,) for document_id, score in self.relevance_ranking_dict.items()],
+            key=operator.itemgetter(1))
+
+        self.filter_irrelevant_results()
 
         self.filter_results()
+
+        self.results = [song_object for document_id, song_object in self.song_objects_dict.items() if
+                        document_id in self.filtered_ids]
+
         self.rank_results()
+
+        self.add_analytics_to_results()
+
+        self.sort_results()
 
         self.query_id = query_id
 
     def rank_results(self):
-        self.ranking_dict = self.ranker.get_ranking_dict(self.song_objects_dict, self.sorted_relevancy_ranking, self)
+        self.ranking_dict = self.ranker.get_ranking_dict(self.song_objects_dict, self.relevance_ranking_dict, self)
+
+    def sort_results(self):
+        self.results = sorted(self.results, key=lambda x: x['ranking']['score'], reverse=True)
+
+    def add_analytics_to_results(self):
+        for song_object in self.results:
+            song_object['ranking'] = self.ranking_dict[int(song_object['id'])]
+
+    def filter_irrelevant_results(self):
+        self.song_objects_dict = {key: self.song_objects_dict[key] for key, value in self.sorted_relevance_ranking
+                                  if value < self.sorted_relevance_ranking[-1][1]}
 
     def filter_results(self):
         print("Filtering results")
@@ -99,12 +124,16 @@ class Query:
                 document_id in self.filtered_ids]
 
     def get_sorted_results_with_analytics(self):
+        return self.results
+        """
         result = []
         for song_object in self.get_sorted_filtered_results():
             new_song_object = deepcopy(song_object)
             new_song_object['ranking'] = self.ranking_dict[int(song_object['id'])]
             result.append(new_song_object)
-        return sorted(result, key=lambda x: x['ranking']['score'], reverse=True)
+        results = sorted(result, key=lambda x: x['ranking']['score'], reverse=True)
+        return results
+        """
 
     def get_meta_information(self):
         """
@@ -119,8 +148,8 @@ class Query:
             query_id=self.query_id
         )
 
-    def get_relevancy_ranking(self):
-        return self.sorted_relevancy_ranking
+    def get_relevance_ranking(self):
+        return self.sorted_relevance_ranking
 
     def get_query(self):
         return self.query

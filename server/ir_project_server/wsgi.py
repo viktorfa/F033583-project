@@ -17,4 +17,4 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 application = get_wsgi_application()
 
-retriever = Retriever()
+retriever = Retriever(scraper_output_file='hip_hop_seed_unlimited_songs.json')

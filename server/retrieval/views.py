@@ -14,7 +14,7 @@ def get_query(request, query):
     ranker = parse_ranking(request.GET.get('ranking'))
     executed_query = retriever.retrieve(query, filters=filters, index=index_fields, ranker=ranker)
     data = dict(
-        results=executed_query.get_sorted_results_with_analytics()[:10],
+        results=executed_query.get_sorted_results_with_analytics(),
         meta=executed_query.get_meta_information()
     )
     return Response(data)

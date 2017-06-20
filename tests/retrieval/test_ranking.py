@@ -7,29 +7,29 @@ from retrieval.ranker import Ranker, DateRanker
 class TestRanking(unittest.TestCase):
     def setUp(self):
         self.ranking_object_1 = Ranker()
-        self.ranking_object_2 = Ranker(relevancy=0, popularity=100)
+        self.ranking_object_2 = Ranker(relevance=0, popularity=100)
         self.date_ranker_1 = DateRanker()
         self.song_objects = song_objects
-        self.relevancy_ranking = relevancy_ranking
+        self.relevance_ranking = relevance_ranking
 
     def test_ranking_simple(self):
-        actual = self.ranking_object_1.get_sorted_ranking(self.song_objects, self.relevancy_ranking)
+        actual = self.ranking_object_1.get_sorted_ranking(self.song_objects, self.relevance_ranking)
         self.assertIsInstance(actual, list)
 
-    def test_ranking_by_relevancy(self):
-        actual = self.ranking_object_1.get_sorted_ranking(self.song_objects, self.relevancy_ranking)
+    def test_ranking_by_relevance(self):
+        actual = self.ranking_object_1.get_sorted_ranking(self.song_objects, self.relevance_ranking)
 
         for rank in range(1, len(actual)):
             self.assertGreaterEqual(actual[rank - 1]['relevance'], actual[rank]['relevance'])
 
     def test_ranking_by_popularity(self):
-        actual = self.ranking_object_2.get_sorted_ranking(self.song_objects, self.relevancy_ranking)
+        actual = self.ranking_object_2.get_sorted_ranking(self.song_objects, self.relevance_ranking)
 
         for rank in range(1, len(actual)):
             self.assertGreaterEqual(actual[rank - 1]['popularity'], actual[rank]['popularity'])
 
     def test_ranking_by_date(self):
-        actual = self.date_ranker_1.get_sorted_ranking(self.song_objects, self.relevancy_ranking)
+        actual = self.date_ranker_1.get_sorted_ranking(self.song_objects, self.relevance_ranking)
 
         for rank in range(1, len(actual)):
             self.assertGreaterEqual(actual[rank - 1]['date'], actual[rank]['date'])
@@ -63,7 +63,7 @@ song_objects = [
     },
 ]
 
-relevancy_ranking = [
+relevance_ranking = [
     (0, 0.1),
     (1, 0.2),
     (2, 0.2),

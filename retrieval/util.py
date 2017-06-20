@@ -33,10 +33,10 @@ def get_filter_function(field, operator, value):
 
 
 def parse_ranking(string):
-    if string == 'relevancy':
-        return Ranker(relevancy=100, popularity=0)
+    if string == 'relevance':
+        return Ranker(relevance=100, popularity=0)
     elif string == 'popularity':
-        return Ranker(relevancy=0, popularity=100)
+        return Ranker(relevance=0, popularity=100)
     elif string == 'date':
         return DateRanker()
     else:
