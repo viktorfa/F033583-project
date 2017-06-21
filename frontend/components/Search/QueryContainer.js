@@ -30,7 +30,12 @@ const executeQuery = (query, indices, filters, ranking) => {
     dispatch(startQuery(query));
     fetch(`//localhost:8000/search/${query}/${getSearchUrlParameters(indices, filters, ranking)}`)
       .then(response => response.json())
-      .then(json => dispatch(updateSearchResults(json)))
+      .then(json => {
+        //Loading for 1 sec just to show off sjtu spinner
+        setTimeout(() => {
+          return dispatch(updateSearchResults(json))
+        }, 1200)
+      })
   }
 };
 

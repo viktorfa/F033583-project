@@ -19,7 +19,8 @@ const mapStateToProps = (state) => {
   return {
     query: state.resultReducer.query,
     results: state.resultReducer.results,
-    stats: state.resultReducer.stats
+    stats: state.resultReducer.stats,
+    loading: state.resultReducer.loading
   }
 };
 

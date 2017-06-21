@@ -9,14 +9,15 @@
  */
 
 import React from 'react';
-import ResultTable from './ResultTable';
 import Song from "./Song";
 import QueryContainer from './QueryContainer';
 import SearchStatistics from "./SearchStatistics";
+import LoadingScreen from './LoadingScreen';
 
 function SearchComponent(props) {
   return (
     <div>
+      <LoadingScreen loading={props.loading}/>
       <QueryContainer/>
       <SearchStatistics stats={props.stats}/>
       {(props.query && props.results) ? <h5>Results for "{props.query}"</h5> : ''}
