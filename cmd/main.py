@@ -9,14 +9,16 @@ import argparse
 from indexer.inverted_index import IndexProvider
 
 index_fields = [
-    ['title'],
     ['lyrics'],
+    ['title'],
     ['artist'],
     ['artist', 'lyrics'],
     ['artist', 'title'],
     ['title', 'lyrics'],
     ['title', 'lyrics', 'artist']
 ]
+"""
+"""
 
 parser = argparse.ArgumentParser('Start indexing scraper output.')
 

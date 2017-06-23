@@ -1,5 +1,4 @@
 from retrieval.ranker import Ranker, DateRanker
-from typing import cast
 
 
 def parse_index_fields(string):

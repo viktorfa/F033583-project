@@ -15,7 +15,8 @@ class Song extends React.Component {
     super(props);
 
     this.state = ({
-      selected: false
+      selected: false,
+      playing: false
     })
   }
 
@@ -23,7 +24,7 @@ class Song extends React.Component {
     fetch(`//localhost:8000/click/?qid=${this.props.stats.query_id}&sid=${this.props.song.ranking.id}`, {method: 'POST'})
       .then(response => {
         if (response.ok) {
-          console.log("Registred click.");
+          console.log("Registred select click.");
           console.log(response);
           this.setState({selected: true});
         } else {
@@ -32,10 +33,25 @@ class Song extends React.Component {
       }).catch(error => console.log(error.message));
   }
 
+  playSong() {
+    fetch(`//localhost:8000/click/?qid=${this.props.stats.query_id}&sid=${this.props.song.ranking.id}`, {method: 'POST'})
+      .then(response => {
+        if (response.ok) {
+          console.log("Registred play click.");
+          console.log(response);
+          this.setState({playing: true});
+          this.props.playSong(this.props.song)
+        } else {
+          throw new Error(`Could not register click with server: ${response.status} ${response.statusText}`)
+        }
+      }).catch(error => console.log(error.message));
+  }
+
   highlightQuery(string) {
-    const queryTerms = this.props.stats.query.split(' ').map(token => token.toLowerCase());
+    const queryTerms = this.props.stats.query.split(' ').map((token, index) => token.toLowerCase());
     return <span>{string.split(' ').map((token, index) => {
-      return queryTerms.includes(token.toLowerCase()) ? <span className="highlight-text">{token}</span> : <span> {token} </span>;
+      return queryTerms.includes(token.toLowerCase()) ? <span key={index} className="highlight-text">{token}</span> :
+        <span> {token} </span>;
     })}</span>;
   }
 
@@ -70,6 +86,16 @@ class Song extends React.Component {
           >
             Select song
           </button>
+          <button onClick={() => this.playSong()} disabled={this.state.playing}
+                  className="mdl-button mdl-js-button"
+          >
+            Play song
+          </button>
+          {
+            this.state.playing === "anus" ?
+              <iframe src={this.props.song.play_link} frameborder="0" width={200} height={200}
+                      onLoad={() => console.log("IFRAME LOADED!!1")}></iframe> : ''
+          }
         </div>
       );
     } else {

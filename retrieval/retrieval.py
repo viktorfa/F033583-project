@@ -1,6 +1,8 @@
 import operator
 
-from copy import deepcopy
+import time
+
+import datetime
 from scipy.spatial.distance import cdist
 
 from common.io import load_song_objects
@@ -28,8 +30,7 @@ class Retriever:
                  ):
         self.index_provider = IndexProvider(scraper_output_file)
 
-        self.indices = {}
-        self.indices['default'] = self.index_provider.get_inverted_index(['title'])
+        self.indices = {'default': self.index_provider.get_inverted_index(['title'])}
 
         for field in index_fields:
             self.indices[str(sorted(field))] = self.index_provider.get_inverted_index(field)
@@ -37,14 +38,13 @@ class Retriever:
         self.song_objects = load_song_objects(scraper_output_file)
         self.song_objects_dict = {int(song_object['id']): song_object for song_object in self.song_objects}
 
-    def retrieve(self, query, limit=10, filters=list([]), index='default', ranker=Ranker()):
+    def retrieve(self, query, filters=list([]), index='default', ranker=Ranker()):
         if type(index) is list:
             index = str(sorted(index))
         query = Query(query, self.indices[index], self.song_objects_dict, self, ranker=ranker, filters=filters)
         query_id = search_log.register_query(query)
         query.execute_query(query_id)
 
-        # self.print_results(query, query.get_relevance_ranking(), index)
         return query
 
     def print_results(self, query, sorted_ranking, index):
@@ -72,6 +72,8 @@ class Query:
         self.ranking_dict = None
         self.query_id = None
         self.results = None
+        self.start_time = datetime.datetime.now()
+        self.processing_time = None
 
     def execute_query(self, query_id=None):
         query_matrix = self.index.get_query_matrix(self.query)
@@ -97,6 +99,8 @@ class Query:
 
         self.query_id = query_id
 
+        self.processing_time = datetime.datetime.now() - self.start_time
+
     def rank_results(self):
         self.ranking_dict = self.ranker.get_ranking_dict(self.song_objects_dict, self.relevance_ranking_dict, self)
 
@@ -119,21 +123,8 @@ class Query:
             self.filtered_ids = [document_id for document_id, value in self.song_objects_dict.items() if
                                  document_id in self.filtered_ids and filter_function(value)]
 
-    def get_sorted_filtered_results(self):
-        return [song_object for document_id, song_object in self.song_objects_dict.items() if
-                document_id in self.filtered_ids]
-
     def get_sorted_results_with_analytics(self):
         return self.results
-        """
-        result = []
-        for song_object in self.get_sorted_filtered_results():
-            new_song_object = deepcopy(song_object)
-            new_song_object['ranking'] = self.ranking_dict[int(song_object['id'])]
-            result.append(new_song_object)
-        results = sorted(result, key=lambda x: x['ranking']['score'], reverse=True)
-        return results
-        """
 
     def get_meta_information(self):
         """
@@ -141,15 +132,16 @@ class Query:
         :return: 
         """
         return dict(
-            total_songs=len(self.song_objects_dict),
+            total_songs_in_index=self.index.get_meta_information()['num_documents'],
+            total_terms_in_index=self.index.get_meta_information()['num_terms'],
+            relevant_songs=len(self.song_objects_dict),
             retrieved_songs=len(self.filtered_ids),
             query=self.query,
             index=self.index.get_fields(),
-            query_id=self.query_id
-        )
+            query_id=self.query_id,
+            query_processing_time=self.processing_time.microseconds / 1000 + self.processing_time.seconds * 1000
 
-    def get_relevance_ranking(self):
-        return self.sorted_relevance_ranking
+        )
 
     def get_query(self):
         return self.query

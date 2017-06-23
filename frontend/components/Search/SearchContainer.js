@@ -11,8 +11,10 @@
 import {connect} from 'react-redux';
 import SearchComponent from "./SearchComponent";
 
-const mapDispatchToProps = (dispatch) => {
-  return {}
+const PLAY_SONG = 'PLAY_SONG';
+
+const playSong = (song) => {
+  return {type: PLAY_SONG, isPlaying: true, song}
 };
 
 const mapStateToProps = (state) => {
@@ -21,6 +23,13 @@ const mapStateToProps = (state) => {
     results: state.resultReducer.results,
     stats: state.resultReducer.stats,
     loading: state.resultReducer.loading
+  }
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    playSong: (song) => {
+      dispatch(playSong(song));
+    },
   }
 };
 

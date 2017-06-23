@@ -57,4 +57,18 @@ const queryReducer = (state = initialQueryState, action) => {
   }
 };
 
-export default combineReducers({resultReducer, queryReducer});
+const initialPlayerState = {isPlaying: false, currentSong: undefined};
+const playerReducer = (state = initialPlayerState, action) => {
+  switch (action.type) {
+    case 'PLAY_SONG':
+      return {...state, isPlaying: true, currentSong: action.song};
+    case 'PLAY':
+      return {...state, isPlaying: true};
+    case 'STOP':
+      return {...state, isPlaying: false};
+    default:
+      return state;
+  }
+};
+
+export default combineReducers({resultReducer, queryReducer, playerReducer});

@@ -36,6 +36,11 @@ def parse_float(string):
         return None
 
 
+def parse_url(string):
+    matches = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string)
+    return matches
+
+
 class SongLoader(ItemLoader):
     """
     The loader takes input from the spider as lists of matching tags and populates the Item which will be the final
@@ -57,3 +62,6 @@ class SongLoader(ItemLoader):
     num_shares_in = MapCompose(remove_tags, parse_int, int)
     num_comments_in = MapCompose(remove_tags, parse_int, int)
     album_rating_in = MapCompose(remove_tags, parse_float, float)
+    mobile_link_in = MapCompose(remove_tags, parse_url, str.strip)
+    play_link_in = MapCompose(remove_tags, parse_url, str.strip)
+    xiami_id_in = MapCompose(remove_tags, parse_url, parse_int, str)

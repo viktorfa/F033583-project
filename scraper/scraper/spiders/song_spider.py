@@ -12,13 +12,22 @@ from scraper.util import process_artist_links
 class SongSpider(CrawlSpider):
     allowed_domains = ['www.xiami.com']
     name = 'song_spider'
-    start_urls = ['http://www.xiami.com/genre/artists/gid/1']  # The page for Hip-Hop genre.
+    """
+    start_urls = [
+        'http://www.xiami.com/genre/artists/gid/1',  # Hip Hop
+        'http://www.xiami.com/genre/artists/gid/4',  # Blues
+        'http://www.xiami.com/genre/artists/gid/8',  # Latin
+        'http://www.xiami.com/genre/artists/gid/20',  # Country
+    ]
+    """
+
+    start_urls = ['http://www.xiami.com/genre/artists/gid/%d' % id for id in range(21)]
 
     rules = [
         #  This rule follows the pagination of the artists in the start url page.
         Rule(
             LinkExtractor(
-                allow=('/genre/artists/gid/1/page/\d+',)
+                allow=('/genre/artists/gid/\d+/page/\d+',)
             ),
             follow=True,  # Just follow, not parse.
         ),
@@ -77,11 +86,16 @@ class SongSpider(CrawlSpider):
         )
         song_loader.add_value('source_url', response.url)
         song_loader.add_css('lyrics', '#lrc .lrc_main')
-        song_loader.add_value('timestamp', str(datetime.utcnow()))
+
+        song_loader.add_css('mobile_link', 'meta[name="mobile-agent"]::attr(content)')
+        song_loader.add_css('play_link', 'meta[property="og:music:play"]::attr(content)')
+        song_loader.add_css('xiami_id', 'meta[name="mobile-agent"]::attr(content)')
 
         music_counts = response.css('div.music_counts ul li').extract()
 
+
         # song_loader.add_value('num_listens', music_counts[0]) Need to load JS
+        song_loader.add_value('timestamp', str(datetime.utcnow()))
         song_loader.add_value('num_shares', music_counts[1])
         song_loader.add_value('num_comments', music_counts[2])
 

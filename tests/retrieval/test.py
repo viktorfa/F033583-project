@@ -12,7 +12,6 @@ class Test(unittest.TestCase):
         pass
 
     def test_get_weighted_query_matrix(self):
-        query = 'Take me to the top'
         pass
 
 

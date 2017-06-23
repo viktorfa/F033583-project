@@ -70,7 +70,7 @@ it needs to notify MDL so it could do proper clean up. MDL provides `upgradeElem
 `downgradeElements(nodes)` API methods for that. For example, to implement a [Button](../../components/Button)
 component you would write code similar to this:
 
-#### `components/Button/Button.js`
+#### `components/Button/PlayerComponent.js`
 
 ```js
 import React, { PropTypes } from 'react';

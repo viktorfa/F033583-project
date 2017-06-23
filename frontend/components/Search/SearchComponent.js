@@ -22,7 +22,7 @@ function SearchComponent(props) {
       <SearchStatistics stats={props.stats}/>
       {(props.query && props.results) ? <h5>Results for "{props.query}"</h5> : ''}
       {props.results.map((song, index) => {
-        return (<div key={song.id + props.stats.query_id}><Song song={song} stats={props.stats} rank={index}/></div>);
+        return (<div key={song.id + props.stats.query_id}><Song song={song} stats={props.stats} rank={index} playSong={props.playSong}/></div>);
       })}
     </div>
   );

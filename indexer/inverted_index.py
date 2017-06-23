@@ -2,7 +2,7 @@ from copy import deepcopy
 from pprint import pprint
 
 from common.io import load_inverted_index, load_song_objects, write_inverted_index
-from indexer.weighing import MatrixMaker, tokenize
+from indexer.weighing import tokenize, get_weighted_query_matrix, get_weighted_document_matrix
 
 
 class IndexProvider:
@@ -14,7 +14,6 @@ class IndexProvider:
         """
         Creates an inverted index and writes it to a file based on some structured input from the scraper,
         indexed by the specified fields.
-        :param input_file_name:
         :param fields:
         :return:
         """
@@ -72,12 +71,11 @@ class IndexProvider:
 
 
 class Index:
-    def __init__(self, inverted_index, fields, meta_information, matrix_maker=MatrixMaker()):
+    def __init__(self, inverted_index, fields, meta_information):
         self.inverted_index = inverted_index
         self.fields = fields
         self.meta_information = meta_information
-        self.matrix_maker = matrix_maker
-        self.matrix = self.matrix_maker.get_weighted_document_matrix(self)
+        self.matrix = get_weighted_document_matrix(self)
 
     def get_inverted_index(self):
         return self.inverted_index
@@ -86,13 +84,12 @@ class Index:
         return self.meta_information
 
     def get_matrix(self):
+        if self.matrix is None:
+            self.matrix = get_weighted_document_matrix(self)
         return self.matrix
 
-    def get_matrix_maker(self):
-        return self.matrix_maker
-
     def get_query_matrix(self, query):
-        return self.matrix_maker.get_weighted_query_matrix(query, self)
+        return get_weighted_query_matrix(query, self)
 
     def get_fields(self):
         return self.fields

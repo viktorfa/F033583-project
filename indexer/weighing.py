@@ -1,33 +1,33 @@
 import math
 import re
 from scipy import sparse
+import numpy as np
 
 
-class MatrixMaker:
-    def __init__(self, weighing='tf-idf'):
-        pass
+def get_weighted_document_matrix(index):
+    print("Starting to create matrix for index {}".format(index.get_fields()))
+    meta_information = index.get_meta_information()
+    result = []
+    N = meta_information['num_documents']
+    for document_id in range(N):
+        vector = [get_term_weight(value, str(document_id), N) if str(document_id) in value.keys() else 1e-50 for key, value in index.get_inverted_index().items()]
+        vector.append(1)  # appending one extra term to the matrix to make documents with zero terms not score high
+        result.append(np.array(vector, dtype=float))
+    print("Finished creating matrix for index {}".format(index.get_fields()))
+    return sparse.csr_matrix(result)
 
-    def get_weighted_document_matrix(self, index):
-        meta_information = index.get_meta_information()
-        result = []
-        N = meta_information['num_documents']
-        for document_id in range(N):
-            vector = [get_term_weight(value, str(document_id), N) for key, value in index.get_inverted_index().items()]
-            vector.append(1)  # appending one extra term to the matrix to make documents with zero terms not score high
-            result.append(vector)
-        return sparse.csr_matrix(result)
 
-    def get_weighted_query_matrix(self, query, index):
-        meta_information = index.get_meta_information()
-        N = meta_information['num_documents']
+def get_weighted_query_matrix(query, index):
+    meta_information = index.get_meta_information()
+    N = meta_information['num_documents']
 
-        tokenized_query = tokenize(query)
+    tokenized_query = tokenize(query)
 
-        vector = [get_query_term_weight(value, tokenized_query.count(key), N) for key, value in
-                  index.get_inverted_index().items()]
-        vector.append(0)  # appending one extra term to the matrix to make documents with zero terms not score high
+    vector = [get_query_term_weight(value, tokenized_query.count(key), N) for key, value in
+              index.get_inverted_index().items()]
+    vector.append(0)  # appending one extra term to the matrix to make documents with zero terms not score high
 
-        return sparse.csr_matrix([vector])
+    return sparse.csr_matrix([vector])
 
 
 def get_query_term_weight(ii_entry, query_term_count, N):

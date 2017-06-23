@@ -34,3 +34,7 @@ class Song(scrapy.Item):
     source_url = scrapy.Field(serializer=str)
     id = scrapy.Field(serializer=str)
     timestamp = scrapy.Field(serializer=str)
+
+    mobile_link = scrapy.Field(serializer=str)
+    play_link = scrapy.Field(serializer=str)
+    xiami_id = scrapy.Field(serializer=str)
