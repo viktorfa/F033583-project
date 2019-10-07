@@ -1,8 +1,0 @@
-SCRAPER
-
-Getting the mp3 file for a song is very hard.
-Getting the number of how many times a song has been listened to is not easy, because that value is loaded with
-Javascript on the song pages of Xiami.
-
-The spider doesn't handle pagination at the moment so it might not get all 10000 songs we need, but it's good for
-getting some data to work with. Implementing support for pagination is quite easy anyway.
